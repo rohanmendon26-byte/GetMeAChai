@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ☕ GetMeAChai — Creator Crowdfunding & Membership Platform
 
-## Getting Started
+GetMeAChai is a modern, full-stack creator crowdfunding and subscription platform inspired by Patreon and BuyMeACoffee, tailored for Indian creators with **Razorpay (UPI, Cards, NetBanking)** integration.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🌟 Key Features
+
+### For Creators
+- **Custom Profile**: Setup banner, avatar, biography, social links, and monthly funding goals.
+- **Support Tiers**: Create multi-level monthly membership tiers with custom pricing and perks.
+- **Exclusive Content Gating**: Publish public or supporters-only posts with tier-based permission gating.
+- **Interactive Discussions**: Community comments and discussions on creator posts.
+- **Analytics & Dashboard**: Track gross revenue, active supporter counts, payout history, and goal completion rates.
+- **Instant Notifications**: Real-time alerts for new supporters, received payments, and post comments.
+
+### For Supporters
+- **Discover Creators**: Explore creators with keyword search and category filters (Developers, Designers, Writers, Musicians, etc.).
+- **Seamless Checkout**: Join membership tiers or send chai contributions via Razorpay UPI and cards.
+- **Supporter Dashboard**: Manage active creator subscriptions, upgrade or change tiers, and download payment receipts.
+- **Exclusive Feed**: Access locked articles, updates, and behind-the-scenes content unlocked by active subscriptions.
+
+---
+
+## 🛠️ Technology Stack
+
+- **Framework**: [Next.js 16 (App Router)](https://nextjs.org/)
+- **Language**: JavaScript (ES6+)
+- **Styling**: Tailwind CSS & Lucide Icons
+- **Database**: MongoDB with Mongoose ODM
+- **Authentication**: NextAuth.js (Google OAuth, GitHub OAuth, and Credentials)
+- **Payments**: Razorpay Node SDK & Checkout JS (Server-verified HMAC SHA256 signatures)
+- **Deployment**: Vercel & MongoDB Atlas
+
+---
+
+## 🏗️ Architecture & Database Models
+
+```
+getmeachai/
+├── app/
+│   ├── [username]/           # Public creator profile & tiered support view
+│   ├── about/                # Platform story, feature breakdown & FAQ
+│   ├── api/
+│   │   ├── auth/             # NextAuth route handlers & registration
+│   │   ├── creator/          # Stats, profile settings, tiers, and earnings
+│   │   ├── explore/          # Creator discovery & search API
+│   │   ├── notifications/    # User notification dispatch & read status
+│   │   ├── payments/         # Razorpay order generation & signature verification
+│   │   ├── posts/            # CRUD post operations & comment endpoints
+│   │   └── subscriptions/    # Active subscription tracking & tier updates
+│   ├── creator/              # Creator dashboard, posts, tiers & payments
+│   ├── dashboard/            # Supporter dashboard & payment receipt history
+│   ├── explore/              # Creator discovery & category filters
+│   ├── forgot-password/      # Password recovery page
+│   ├── login/ & register/    # Authentication pages
+│   └── verify-email/         # Email verification notice
+├── components/               # Navbar, NotificationDropdown, CreatorCards, Comments
+├── lib/                      # MongoDB, NextAuth, and Razorpay client singletons
+└── models/                   # User, Tier, Post, Subscription, Payment, Notification, Comment
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Database Models Overview
+1. **`User`**: Profiles, credentials, avatar, cover image, bio, roles (`creator`, `supporter`, `admin`), social links.
+2. **`Tier`**: Membership tiers, prices, perks, order, and status.
+3. **`Post`**: Content posts, images, visibility (`public` / `supporters`), and target tier requirement.
+4. **`Subscription`**: Active/cancelled recurring memberships linking supporters to creators and tiers.
+5. **`Payment`**: Audit log of Razorpay orders, payment IDs, amounts, and transaction statuses.
+6. **`Notification`**: Activity alerts for payments, new supporters, posts, and comments.
+7. **`Comment`**: Community feedback and replies on creator posts.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 💳 Payment Flow & Security
 
-## Learn More
+1. **Order Creation**: Client requests an order for a selected tier. Server creates a Razorpay order with the tier price retrieved directly from MongoDB.
+2. **Checkout**: Razorpay modal opens on the client for UPI/Card processing.
+3. **Signature Verification**: Server verifies the cryptographic HMAC signature (`crypto.createHmac('sha256')`) using `RAZORPAY_KEY_SECRET`.
+4. **Fulfillment**: Activates the subscription, logs the payment record, and sends a notification to the creator.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Getting Started
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 1. Clone the repository & install dependencies:
+```bash
+git clone https://github.com/your-username/getmeachai.git
+cd getmeachai
+npm install
+```
 
-## Deploy on Vercel
+### 2. Configure Environment Variables:
+Copy `.env.example` to `.env.local`:
+```bash
+cp .env.example .env.local
+```
+Fill in your credentials:
+```env
+MONGODB_URI=mongodb+srv://...
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_secret_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GITHUB_ID=your_github_id
+GITHUB_SECRET=your_github_secret
+RAZORPAY_KEY_ID=rzp_test_...
+RAZORPAY_KEY_SECRET=your_razorpay_secret
+NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_...
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. Run development server:
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🧪 Production Build & Linting
+
+```bash
+npm run lint    # ESLint code verification (0 errors)
+npm run build   # Production bundle compilation
+npm start       # Start production server
+```
