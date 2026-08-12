@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import ChaiLoader from "@/components/ChaiLoader";
 import {
   Search,
   Coffee,
@@ -169,9 +170,7 @@ export default function ExplorePage() {
           </div>
 
           {loading ? (
-            <div className="flex min-h-[300px] items-center justify-center">
-              <Loader2 size={36} className="animate-spin text-amber-400" />
-            </div>
+            <ChaiLoader fullScreen={false} message="Discovering amazing creators..." />
           ) : creators.length === 0 ? (
             <div className="mt-12 rounded-3xl border border-dashed border-white/10 bg-white/[0.02] p-16 text-center">
               <Coffee size={40} className="mx-auto text-amber-400" />

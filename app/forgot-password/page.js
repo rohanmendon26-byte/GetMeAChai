@@ -2,18 +2,25 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Coffee, Mail, ArrowLeft, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { Coffee, Mail, Lock, ArrowLeft, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!email) {
-      setError("Please enter your email address.");
+    if (!email || !newPassword) {
+      setError("Please enter both your email and a new password.");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setError("Password must be at least 8 characters long.");
       return;
     }
 
@@ -21,11 +28,22 @@ export default function ForgotPasswordPage() {
     setError("");
 
     try {
-      // Simulate/Trigger reset flow
-      await new Promise((r) => setTimeout(r, 1000));
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, newPassword }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to reset password.");
+      }
+
+      setSuccessMessage(data.message);
       setSubmitted(true);
     } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
+      setError(err.message || "An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -47,9 +65,9 @@ export default function ForgotPasswordPage() {
               GetMe<span className="text-amber-400">AChai</span>
             </span>
           </Link>
-          <h1 className="text-2xl font-bold tracking-tight">Reset Password</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Set / Reset Password</h1>
           <p className="mt-2 text-sm text-gray-400">
-            Enter your email to receive recovery instructions.
+            Enter your account email and create a new password.
           </p>
         </div>
 
@@ -60,9 +78,9 @@ export default function ForgotPasswordPage() {
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-green-500/10 text-green-400 border border-green-500/20">
                 <CheckCircle2 size={24} />
               </div>
-              <h2 className="text-lg font-bold">Check Your Email</h2>
+              <h2 className="text-lg font-bold">Password Updated</h2>
               <p className="text-sm text-gray-400 leading-relaxed">
-                If an account exists for <span className="text-white font-medium">{email}</span>, we&apos;ve sent password reset instructions to your inbox.
+                {successMessage || "Your password has been successfully updated. You can now log in."}
               </p>
               <div className="pt-4">
                 <Link
@@ -70,7 +88,7 @@ export default function ForgotPasswordPage() {
                   className="inline-flex items-center justify-center gap-2 w-full rounded-2xl bg-amber-500 py-3.5 text-sm font-semibold text-black hover:bg-amber-400 transition"
                 >
                   <ArrowLeft size={16} />
-                  Return to Login
+                  Proceed to Login
                 </Link>
               </div>
             </div>
@@ -85,7 +103,7 @@ export default function ForgotPasswordPage() {
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-                  Email Address
+                  Account Email
                 </label>
                 <div className="relative">
                   <Mail
@@ -96,8 +114,29 @@ export default function ForgotPasswordPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="creator@getmeachai.com"
+                    placeholder="creator@example.com"
                     required
+                    className="w-full rounded-2xl border border-white/10 bg-black/40 py-3.5 pl-12 pr-4 text-sm text-white placeholder:text-gray-600 outline-none transition focus:border-amber-500/50"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                  New Password (min 8 characters)
+                </label>
+                <div className="relative">
+                  <Lock
+                    size={18}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+                  />
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                    required
+                    minLength={8}
                     className="w-full rounded-2xl border border-white/10 bg-black/40 py-3.5 pl-12 pr-4 text-sm text-white placeholder:text-gray-600 outline-none transition focus:border-amber-500/50"
                   />
                 </div>
@@ -111,10 +150,10 @@ export default function ForgotPasswordPage() {
                 {loading ? (
                   <>
                     <Loader2 size={18} className="animate-spin" />
-                    Sending link...
+                    Updating password...
                   </>
                 ) : (
-                  "Send Reset Link"
+                  "Update Password"
                 )}
               </button>
 

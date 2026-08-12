@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import ChaiLoader from "@/components/ChaiLoader";
 import {
   ArrowLeft,
   Coffee,
@@ -639,12 +640,7 @@ export default function CreatorPostsPage() {
 
       {/* Loading */}
       {loading ? (
-        <div className="flex justify-center py-20">
-          <Loader2
-            size={30}
-            className="animate-spin text-amber-400"
-          />
-        </div>
+        <ChaiLoader fullScreen={false} message="Loading your posts..." />
       ) : posts.length === 0 ? (
 
         /* Empty State */

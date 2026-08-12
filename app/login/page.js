@@ -74,7 +74,7 @@ function LoginForm() {
         return;
       }
 
-      router.push("/dashboard");
+      router.push("/");
       router.refresh();
     } catch (err) {
       console.error(err);
@@ -88,7 +88,7 @@ function LoginForm() {
     try {
       setOauthLoading(provider);
       setError("");
-      await signIn(provider, { callbackUrl: "/dashboard" });
+      await signIn(provider, { callbackUrl: "/" });
     } catch (err) {
       console.error(`${provider} signIn error:`, err);
       setError(`Failed to sign in with ${provider}.`);
@@ -186,18 +186,20 @@ function LoginForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email */}
+            {/* Email or Username */}
             <div>
-              <label className="mb-2 block text-sm text-gray-300">Email</label>
+              <label className="mb-2 block text-sm text-gray-300">
+                Email or Username
+              </label>
 
               <input
-                type="email"
+                type="text"
                 name="email"
                 value={form.email}
                 onChange={handleChange}
-                placeholder="you@example.com"
+                placeholder="you@example.com or your username"
                 required
-                autoComplete="email"
+                autoComplete="username"
                 className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm outline-none transition placeholder:text-gray-700 focus:border-amber-500/50"
               />
             </div>

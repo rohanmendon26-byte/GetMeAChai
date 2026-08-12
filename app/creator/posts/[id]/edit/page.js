@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import ChaiLoader from "@/components/ChaiLoader";
 import {
   ArrowLeft,
   Coffee,
@@ -185,11 +186,7 @@ export default function EditPostPage() {
   }
 
   if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#080808] text-white">
-        <Loader2 size={32} className="animate-spin text-amber-400" />
-      </main>
-    );
+    return <ChaiLoader message="Loading post details..." />;
   }
 
   return (

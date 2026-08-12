@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import ChaiLoader from "@/components/ChaiLoader";
 import {
   ArrowLeft,
   Save,
@@ -219,16 +220,7 @@ export default function CreatorProfilePage() {
   }
 
   if (loading) {
-    return (
-      <main className="min-h-screen bg-[#080808] text-white">
-        <div className="flex min-h-screen items-center justify-center">
-          <Loader2
-            className="animate-spin text-amber-400"
-            size={30}
-          />
-        </div>
-      </main>
-    );
+    return <ChaiLoader message="Loading profile settings..." />;
   }
 
   return (

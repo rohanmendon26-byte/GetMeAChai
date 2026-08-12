@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import ChangeTierButton from "@/app/components/ChangeTierButton";
 import CancelSubscriptionButton from "@/app/components/CancelSubscriptionButton";
+import ChaiLoader from "@/components/ChaiLoader";
 
 import {
   Coffee,
@@ -80,16 +81,7 @@ export default function DashboardPage() {
   }
 
   if (status === "loading") {
-    return (
-      <main className="min-h-screen bg-black text-white">
-        <div className="flex min-h-screen items-center justify-center">
-          <Loader2
-            size={30}
-            className="animate-spin text-amber-400"
-          />
-        </div>
-      </main>
-    );
+    return <ChaiLoader message="Loading your dashboard..." />;
   }
 
   if (!session) {

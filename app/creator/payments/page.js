@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import ChaiLoader from "@/components/ChaiLoader";
 
 import {
   Coffee,
@@ -67,14 +68,7 @@ export default function CreatorPaymentsPage() {
     status === "loading" ||
     loading
   ) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#080808] text-white">
-        <Loader2
-          size={32}
-          className="animate-spin text-amber-400"
-        />
-      </main>
-    );
+    return <ChaiLoader message="Loading payment transactions..." />;
   }
 
   // ============================================

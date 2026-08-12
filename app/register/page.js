@@ -72,7 +72,7 @@ export default function RegisterPage() {
     try {
       setOauthLoading(provider);
       setError("");
-      await signIn(provider, { callbackUrl: "/dashboard" });
+      await signIn(provider, { callbackUrl: "/" });
     } catch (err) {
       console.error(`${provider} OAuth error:`, err);
       setError(`Failed to authenticate with ${provider}.`);

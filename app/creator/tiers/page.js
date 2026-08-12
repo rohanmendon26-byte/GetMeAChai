@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import ChaiLoader from "@/components/ChaiLoader";
 import {
   ArrowLeft,
   Coffee,
@@ -299,14 +300,7 @@ export default function CreatorTiersPage() {
   }
 
   if (status === "loading" || loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[#080808] text-white">
-        <Coffee
-          size={30}
-          className="animate-pulse text-amber-400"
-        />
-      </main>
-    );
+    return <ChaiLoader message="Loading membership tiers..." />;
   }
 
   if (!session) {

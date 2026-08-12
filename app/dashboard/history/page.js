@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import ChaiLoader from "@/components/ChaiLoader";
 import {
   ArrowLeft,
   Coffee,
@@ -62,16 +63,7 @@ export default function SubscriptionHistoryPage() {
   }, [router]);
 
   if (loading) {
-    return (
-      <main className="min-h-screen bg-black text-white">
-        <div className="flex min-h-screen items-center justify-center">
-          <Loader2
-            size={30}
-            className="animate-spin text-amber-400"
-          />
-        </div>
-      </main>
-    );
+    return <ChaiLoader message="Loading subscription history..." />;
   }
 
   return (
