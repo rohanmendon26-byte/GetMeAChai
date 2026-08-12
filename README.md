@@ -112,7 +112,7 @@ NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_...
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [https://get-me-a-chai-ecru.vercel.app/](https://get-me-a-chai-ecru.vercel.app/) in your browser.
 
 ---
 
