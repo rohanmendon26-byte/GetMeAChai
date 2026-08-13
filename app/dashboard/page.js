@@ -333,6 +333,12 @@ function CreatorCard({
       })
     : "Not available";
 
+  const isPaid =
+    subscription.paymentStatus === "paid" ||
+    Boolean(subscription.paymentId) ||
+    subscription.status === "active";
+  const isFailed = subscription.paymentStatus === "failed";
+
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -395,7 +401,15 @@ function CreatorCard({
       <div className="mt-6 grid gap-3 border-t border-white/10 pt-5 sm:grid-cols-3">
         {/* Payment */}
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-500/10 text-green-400">
+          <div
+            className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+              isPaid
+                ? "bg-green-500/10 text-green-400"
+                : isFailed
+                ? "bg-red-500/10 text-red-400"
+                : "bg-amber-500/10 text-amber-400"
+            }`}
+          >
             <CreditCard size={17} />
           </div>
 
@@ -404,12 +418,20 @@ function CreatorCard({
               Payment
             </p>
 
-            <p className="text-sm font-medium text-green-400">
-              {subscription.paymentStatus ===
-              "paid"
+            <p
+              className={`text-sm font-medium capitalize ${
+                isPaid
+                  ? "text-green-400"
+                  : isFailed
+                  ? "text-red-400"
+                  : "text-amber-400"
+              }`}
+            >
+              {isPaid
                 ? "Paid"
-                : subscription.paymentStatus ||
-                  "Pending"}
+                : isFailed
+                ? "Failed"
+                : "Pending"}
             </p>
           </div>
         </div>

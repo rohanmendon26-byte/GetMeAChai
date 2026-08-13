@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { MessageSquare, Send, Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function PostComments({ postId, initialCount = 0 }) {
   const { data: session } = useSession();
@@ -61,8 +62,10 @@ export default function PostComments({ postId, initialCount = 0 }) {
 
       setComments((prev) => [...prev, data.comment]);
       setText("");
+      toast.success("Comment added!");
     } catch (err) {
       setError(err.message);
+      toast.error(err.message || "Failed to post comment");
     } finally {
       setSubmitting(false);
     }

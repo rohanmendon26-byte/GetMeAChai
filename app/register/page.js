@@ -4,6 +4,7 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { Coffee, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -52,7 +53,9 @@ export default function RegisterPage() {
         throw new Error(data.message || "Registration failed.");
       }
 
-      setSuccess(data.message);
+      const successMsg = data.message || "Account created successfully!";
+      setSuccess(successMsg);
+      toast.success(successMsg);
 
       setForm({
         name: "",
@@ -63,6 +66,7 @@ export default function RegisterPage() {
       });
     } catch (err) {
       setError(err.message);
+      toast.error(err.message || "Registration failed.");
     } finally {
       setLoading(false);
     }
@@ -75,7 +79,9 @@ export default function RegisterPage() {
       await signIn(provider, { callbackUrl: "/" });
     } catch (err) {
       console.error(`${provider} OAuth error:`, err);
-      setError(`Failed to authenticate with ${provider}.`);
+      const errMsg = `Failed to authenticate with ${provider}.`;
+      setError(errMsg);
+      toast.error(errMsg);
       setOauthLoading("");
     }
   }

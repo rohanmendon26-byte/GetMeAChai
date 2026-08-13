@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import ChaiLoader from "@/components/ChaiLoader";
+import { toast } from "react-toastify";
 import {
   ArrowLeft,
   Coffee,
@@ -107,16 +108,19 @@ export default function EditPostPage() {
 
     if (!form.title.trim()) {
       setError("Please enter a title.");
+      toast.error("Please enter a title.");
       return;
     }
 
     if (!form.content.trim()) {
       setError("Please write some content.");
+      toast.error("Please write some content.");
       return;
     }
 
     if (form.visibility === "supporters" && !form.tier) {
       setError("Please select a supporter tier.");
+      toast.error("Please select a supporter tier.");
       return;
     }
 
@@ -144,6 +148,7 @@ export default function EditPostPage() {
       }
 
       setSuccess("Post updated successfully!");
+      toast.success("Post updated successfully!");
 
       setTimeout(() => {
         router.push("/creator/posts");
@@ -151,6 +156,7 @@ export default function EditPostPage() {
     } catch (err) {
       console.error("Update post error:", err);
       setError(err.message || "Something went wrong.");
+      toast.error(err.message || "Failed to update post.");
     } finally {
       setSaving(false);
     }
@@ -177,10 +183,12 @@ export default function EditPostPage() {
         throw new Error(data.message || "Failed to delete post.");
       }
 
+      toast.success("Post deleted successfully.");
       router.push("/creator/posts");
     } catch (err) {
       console.error("Delete post error:", err);
       setError(err.message || "Failed to delete post.");
+      toast.error(err.message || "Failed to delete post.");
       setDeleting(false);
     }
   }

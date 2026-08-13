@@ -287,16 +287,15 @@ export async function POST(request) {
     // Create payment record
     try {
       await Payment.create({
-        user: session.user.id,
-        creator: newTier.creator,
-        tier: newTier._id,
-        subscription: subscription._id,
+        userId: session.user.id,
+        creatorId: newTier.creator,
+        tierId: newTier._id,
         razorpayOrderId: razorpay_order_id,
         razorpayPaymentId: razorpay_payment_id,
         amount: Number(newTier.price),
         currency: "INR",
-        status: "success",
-        type: "tier_upgrade",
+        paymentType: "tier_upgrade",
+        status: "paid",
       });
 
       // Send notification to creator

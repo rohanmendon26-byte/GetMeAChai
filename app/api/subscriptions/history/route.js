@@ -50,9 +50,16 @@ export async function GET() {
         .sort({ createdAt: -1 })
         .lean();
 
+    const formattedSubscriptions = subscriptions.map((sub) => ({
+      ...sub,
+      paymentStatus:
+        sub.paymentStatus ||
+        (sub.paymentId || sub.status === "active" ? "paid" : "pending"),
+    }));
+
     return NextResponse.json({
       success: true,
-      subscriptions,
+      subscriptions: formattedSubscriptions,
     });
   } catch (error) {
     console.error(

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "react-toastify";
 import {
   ArrowLeft,
   Coffee,
@@ -87,11 +88,13 @@ export default function NewPostPage() {
 
     if (!form.title.trim()) {
       setError("Please enter a title.");
+      toast.error("Please enter a title.");
       return;
     }
 
     if (!form.content.trim()) {
       setError("Please write some content.");
+      toast.error("Please write some content.");
       return;
     }
 
@@ -102,6 +105,7 @@ export default function NewPostPage() {
       setError(
         "Please select a supporter tier."
       );
+      toast.error("Please select a supporter tier.");
       return;
     }
 
@@ -136,6 +140,7 @@ export default function NewPostPage() {
       setSuccess(
         "Post published successfully!"
       );
+      toast.success("Post published successfully!");
 
       setTimeout(() => {
         router.push("/creator/posts");
@@ -143,6 +148,7 @@ export default function NewPostPage() {
     } catch (error) {
       console.error("Create post error:", error);
       setError(error.message);
+      toast.error(error.message || "Failed to create post.");
     } finally {
       setPublishing(false);
     }

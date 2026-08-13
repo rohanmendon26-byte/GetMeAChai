@@ -51,8 +51,8 @@ export async function GET() {
 
     const payments = await Subscription.find({
       creator: session.user.id,
-      status: "active",
       paymentId: {
+        $exists: true,
         $ne: "",
       },
     })

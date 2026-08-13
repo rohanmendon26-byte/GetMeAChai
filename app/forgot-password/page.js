@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { toast } from "react-toastify";
 import { Coffee, Mail, Lock, ArrowLeft, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 
 export default function ForgotPasswordPage() {
@@ -15,12 +16,16 @@ export default function ForgotPasswordPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!email || !newPassword) {
-      setError("Please enter both your email and a new password.");
+      const err = "Please enter both your email and a new password.";
+      setError(err);
+      toast.error(err);
       return;
     }
 
     if (newPassword.length < 8) {
-      setError("Password must be at least 8 characters long.");
+      const err = "Password must be at least 8 characters long.";
+      setError(err);
+      toast.error(err);
       return;
     }
 
@@ -40,10 +45,14 @@ export default function ForgotPasswordPage() {
         throw new Error(data.message || "Failed to reset password.");
       }
 
-      setSuccessMessage(data.message);
+      const msg = data.message || "Password updated successfully!";
+      setSuccessMessage(msg);
+      toast.success(msg);
       setSubmitted(true);
     } catch (err) {
-      setError(err.message || "An unexpected error occurred. Please try again.");
+      const errMsg = err.message || "An unexpected error occurred. Please try again.";
+      setError(errMsg);
+      toast.error(errMsg);
     } finally {
       setLoading(false);
     }

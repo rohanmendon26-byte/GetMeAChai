@@ -10,6 +10,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { useState, Suspense } from "react";
+import { toast } from "react-toastify";
 
 function LoginForm() {
   const router = useRouter();
@@ -70,15 +71,20 @@ function LoginForm() {
       });
 
       if (!result || result.error) {
-        setError("Invalid email or password.");
+        const errText = "Invalid email or password.";
+        setError(errText);
+        toast.error(errText);
         return;
       }
 
+      toast.success("Welcome back!");
       router.push("/");
       router.refresh();
     } catch (err) {
       console.error(err);
-      setError("Something went wrong. Please try again.");
+      const errText = "Something went wrong. Please try again.";
+      setError(errText);
+      toast.error(errText);
     } finally {
       setLoading(false);
     }
@@ -91,7 +97,9 @@ function LoginForm() {
       await signIn(provider, { callbackUrl: "/" });
     } catch (err) {
       console.error(`${provider} signIn error:`, err);
-      setError(`Failed to sign in with ${provider}.`);
+      const errText = `Failed to sign in with ${provider}.`;
+      setError(errText);
+      toast.error(errText);
       setOauthLoading("");
     }
   }

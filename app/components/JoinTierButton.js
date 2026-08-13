@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 import { loadRazorpayScript } from "@/lib/loadRazorpay";
 
 export default function JoinTierButton({
@@ -112,7 +113,7 @@ export default function JoinTierButton({
               );
             }
 
-            alert(
+            toast.success(
               verifyData.message ||
                 `Success! You are now supporting ${creator.name || "Creator"} on the ${tier.name} tier.`
             );
@@ -120,7 +121,7 @@ export default function JoinTierButton({
             router.refresh();
           } catch (verifyErr) {
             console.error("Verification error:", verifyErr);
-            alert(
+            toast.error(
               verifyErr.message ||
                 "Payment verification failed. Please contact support."
             );
@@ -145,7 +146,7 @@ export default function JoinTierButton({
       const razorpayInstance = new window.Razorpay(options);
       razorpayInstance.on("payment.failed", function (response) {
         console.error("Payment failed:", response.error);
-        alert(
+        toast.error(
           response.error?.description ||
             "Payment failed. Please try again or use another payment method."
         );
@@ -155,7 +156,7 @@ export default function JoinTierButton({
       razorpayInstance.open();
     } catch (error) {
       console.error("Payment error:", error);
-      alert(error?.message || "Something went wrong. Please try again.");
+      toast.error(error?.message || "Something went wrong. Please try again.");
       setLoading(false);
     }
   }

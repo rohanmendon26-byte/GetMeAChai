@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ChaiLoader from "@/components/ChaiLoader";
+import { toast } from "react-toastify";
 import {
   ArrowLeft,
   Save,
@@ -147,14 +148,17 @@ export default function CreatorProfilePage() {
         [type]: data.url,
       }));
 
-      setMessage(
+      const uploadMsg =
         type === "image"
           ? "Profile image uploaded. Click Save Changes to apply it."
-          : "Cover image uploaded. Click Save Changes to apply it."
-      );
+          : "Cover image uploaded. Click Save Changes to apply it.";
+
+      setMessage(uploadMsg);
+      toast.success(uploadMsg);
     } catch (error) {
       console.error(error);
       setError(error.message);
+      toast.error(error.message || "Failed to upload image.");
     } finally {
       if (type === "image") {
         setUploadingImage(false);
@@ -209,11 +213,13 @@ export default function CreatorProfilePage() {
       setMessage(
         "Profile updated successfully!"
       );
+      toast.success("Profile updated successfully!");
 
       router.refresh();
     } catch (error) {
       console.error(error);
       setError(error.message);
+      toast.error(error.message || "Failed to update profile.");
     } finally {
       setSaving(false);
     }

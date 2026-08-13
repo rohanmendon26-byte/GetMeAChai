@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function JoinTierButton({
   tierId,
@@ -97,10 +98,10 @@ export default function JoinTierButton({
       // SUCCESS
       // =====================================================
 
-      setMessage(
-        data.message ||
-          `You are now supporting ${tierName}!`
-      );
+      const successMsg =
+        data.message || `You are now supporting ${tierName}!`;
+      setMessage(successMsg);
+      toast.success(successMsg);
 
       /*
        * Refresh the server component so:
@@ -127,10 +128,10 @@ export default function JoinTierButton({
         error
       );
 
-      setError(
-        error?.message ||
-          "Something went wrong. Please try again."
-      );
+      const errorMsg =
+        error?.message || "Something went wrong. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }

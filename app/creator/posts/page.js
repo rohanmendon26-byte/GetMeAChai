@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ChaiLoader from "@/components/ChaiLoader";
+import { toast } from "react-toastify";
 import {
   ArrowLeft,
   Coffee,
@@ -227,6 +228,7 @@ export default function CreatorPostsPage() {
         )
       );
 
+      toast.success("Post updated successfully!");
       cancelEditing();
     } catch (error) {
       console.error(
@@ -234,15 +236,12 @@ export default function CreatorPostsPage() {
         error
       );
 
-      setError(
-        error?.message ||
-        "Failed to update post."
-      );
+      const errMsg = error?.message || "Failed to update post.";
+      setError(errMsg);
+      toast.error(errMsg);
     } finally {
       setSavingEdit(false);
     }
-
-
   }
 
   // =========================================================
@@ -253,7 +252,6 @@ export default function CreatorPostsPage() {
     const confirmed = window.confirm(
       "Are you sure you want to delete this post? This action cannot be undone."
     );
-
 
     if (!confirmed) {
       return;
@@ -305,6 +303,8 @@ export default function CreatorPostsPage() {
         )
       );
 
+      toast.success("Post deleted successfully.");
+
       if (editingId === postId) {
         cancelEditing();
       }
@@ -314,15 +314,12 @@ export default function CreatorPostsPage() {
         error
       );
 
-      setError(
-        error?.message ||
-        "Failed to delete post."
-      );
+      const errMsg = error?.message || "Failed to delete post.";
+      setError(errMsg);
+      toast.error(errMsg);
     } finally {
       setDeletingId(null);
     }
-
-
   }
 
   return (<main className="min-h-screen bg-[#080808] text-white">

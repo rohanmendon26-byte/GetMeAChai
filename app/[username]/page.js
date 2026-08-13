@@ -3,6 +3,7 @@ import User from "@/models/User";
 import Tier from "@/models/Tier";
 import Post from "@/models/Post";
 import Subscription from "@/models/Subscription";
+import Goal from "@/models/Goal";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -10,6 +11,7 @@ import Link from "next/link";
 
 import JoinTierButton from "@/app/components/JoinTierButton";
 import PostComments from "@/components/PostComments";
+import GoalProgressBar from "@/components/GoalProgressBar";
 
 import {
   Globe,
@@ -331,6 +333,46 @@ export default async function UserProfilePage({ params }) {
     );
   }
 
+  // Active Creator Goal
+  const activeGoal = await Goal.findOne({
+    creator: creator._id,
+    isActive: true,
+  }).lean();
+
+  let computedGoal = null;
+  if (activeGoal) {
+    const [activeSubCount, activeSubs] = await Promise.all([
+      Subscription.countDocuments({
+        creator: creator._id,
+        status: "active",
+      }),
+      Subscription.find({
+        creator: creator._id,
+        status: "active",
+      }).lean(),
+    ]);
+
+    const monthlySupport = activeSubs.reduce(
+      (sum, sub) => sum + Number(sub.amount || 0),
+      0
+    );
+
+    const current =
+      activeGoal.type === "supporters" ? activeSubCount : monthlySupport;
+
+    const percentage =
+      activeGoal.targetAmount > 0
+        ? Math.min(100, Math.round((current / activeGoal.targetAmount) * 100))
+        : 0;
+
+    computedGoal = {
+      ...activeGoal,
+      currentProgress: current,
+      percentage,
+      isReached: current >= activeGoal.targetAmount,
+    };
+  }
+
   const posts = await Post.find({
     creator: creator._id,
   })
@@ -599,95 +641,116 @@ export default async function UserProfilePage({ params }) {
 
           {/* Support Tiers Column */}
           <div>
-            <div className="sticky top-6">
-              <h2 className="text-xl font-bold">
-                Support {creator.name}
-              </h2>
-
-              {supporterTier && (
-                <div className="mt-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-amber-400">
-                    Active Membership
-                  </p>
-                  <p className="mt-1 text-lg font-bold">
-                    {supporterTier.name} Tier
-                  </p>
-                  <p className="mt-1 text-sm text-gray-400">
-                    ₹{supporterTier.price} / month
-                  </p>
-                </div>
-              )}
-
-              {tiers.length === 0 ? (
-                <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center">
-                  <p className="text-gray-500">
-                    No active support tiers yet.
-                  </p>
-                </div>
-              ) : (
-                <div className="mt-6 space-y-4">
-                  {tiers.map((tier) => {
-                    const currentTierOrder = supporterTier
-                      ? Number(supporterTier.order ?? 0)
-                      : null;
-
-                    const tierOrder = Number(tier.order ?? 0);
-
-                    return (
-                      <div
-                        key={tier._id.toString()}
-                        className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition hover:border-amber-500/30"
+            <div className="sticky top-6 space-y-6">
+              {computedGoal && (
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
+                      Community Milestone
+                    </span>
+                    {isOwner && (
+                      <Link
+                        href="/creator/goals"
+                        className="text-xs font-medium text-gray-400 hover:text-amber-300 transition"
                       >
-                        <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <h3 className="text-lg font-bold">
-                              {tier.name}
-                            </h3>
-                            {tier.description && (
-                              <p className="mt-1 text-sm text-gray-500">
-                                {tier.description}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="shrink-0 text-right">
-                            <p className="text-xl font-bold text-amber-400">
-                              ₹{tier.price}
-                            </p>
-                            <p className="text-xs text-gray-600">
-                              / month
-                            </p>
-                          </div>
-                        </div>
-
-                        {tier.benefits?.length > 0 && (
-                          <div className="mt-5 space-y-2 border-t border-white/10 pt-5">
-                            {tier.benefits.map((benefit, index) => (
-                              <div
-                                key={index}
-                                className="flex items-start gap-2 text-sm text-gray-400"
-                              >
-                                <span className="mt-0.5 text-amber-400">
-                                  ✓
-                                </span>
-                                <span>{benefit}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        <JoinTierButton
-                          tierId={tier._id.toString()}
-                          tierName={tier.name}
-                          tierOrder={tierOrder}
-                          currentTierId={subscription?.tier?.toString()}
-                          currentTierOrder={currentTierOrder}
-                        />
-                      </div>
-                    );
-                  })}
+                        Manage Goal →
+                      </Link>
+                    )}
+                  </div>
+                  <GoalProgressBar goal={computedGoal} />
                 </div>
               )}
+
+              <div>
+                <h2 className="text-xl font-bold">
+                  Support {creator.name}
+                </h2>
+
+                {supporterTier && (
+                  <div className="mt-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-5">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-amber-400">
+                      Active Membership
+                    </p>
+                    <p className="mt-1 text-lg font-bold">
+                      {supporterTier.name} Tier
+                    </p>
+                    <p className="mt-1 text-sm text-gray-400">
+                      ₹{supporterTier.price} / month
+                    </p>
+                  </div>
+                )}
+
+                {tiers.length === 0 ? (
+                  <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center">
+                    <p className="text-gray-500">
+                      No active support tiers yet.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mt-6 space-y-4">
+                    {tiers.map((tier) => {
+                      const currentTierOrder = supporterTier
+                        ? Number(supporterTier.order ?? 0)
+                        : null;
+
+                      const tierOrder = Number(tier.order ?? 0);
+
+                      return (
+                        <div
+                          key={tier._id.toString()}
+                          className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition hover:border-amber-500/30"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <h3 className="text-lg font-bold">
+                                {tier.name}
+                              </h3>
+                              {tier.description && (
+                                <p className="mt-1 text-sm text-gray-500">
+                                  {tier.description}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="shrink-0 text-right">
+                              <p className="text-xl font-bold text-amber-400">
+                                ₹{tier.price}
+                              </p>
+                              <p className="text-xs text-gray-600">
+                                / month
+                              </p>
+                            </div>
+                          </div>
+
+                          {tier.benefits?.length > 0 && (
+                            <div className="mt-5 space-y-2 border-t border-white/10 pt-5">
+                              {tier.benefits.map((benefit, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-start gap-2 text-sm text-gray-400"
+                                >
+                                  <span className="mt-0.5 text-amber-400">
+                                    ✓
+                                  </span>
+                                  <span>{benefit}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          <JoinTierButton
+                            tierId={tier._id.toString()}
+                            tierName={tier.name}
+                            tierOrder={tierOrder}
+                            currentTierId={subscription?.tier?.toString()}
+                            currentTierOrder={currentTierOrder}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </section>

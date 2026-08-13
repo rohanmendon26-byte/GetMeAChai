@@ -16,6 +16,7 @@ import {
   ExternalLink,
   CreditCard,
   FileText,
+  Target,
 } from "lucide-react";
 
 export default function CreatorDashboardPage() {
@@ -357,6 +358,13 @@ export default function CreatorDashboardPage() {
             </h2>
 
             <div className="mt-6 space-y-3">
+
+              <ActionCard
+                href="/creator/goals"
+                icon={<Target size={19} />}
+                title="Creator Goals"
+                description="Set funding & subscriber milestone targets"
+              />
 
               <ActionCard
                 href="/creator/posts"

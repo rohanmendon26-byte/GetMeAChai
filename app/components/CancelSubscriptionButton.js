@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function CancelSubscriptionButton({
   subscriptionId,
@@ -44,14 +45,14 @@ export default function CancelSubscriptionButton({
       }
 
       if (!response.ok) {
-        alert(
+        toast.error(
           data.message ||
             "Unable to cancel subscription."
         );
         return;
       }
 
-      alert(
+      toast.success(
         data.message ||
           "Subscription cancelled successfully."
       );
@@ -69,7 +70,7 @@ export default function CancelSubscriptionButton({
         error
       );
 
-      alert(
+      toast.error(
         "Something went wrong. Please try again."
       );
     } finally {

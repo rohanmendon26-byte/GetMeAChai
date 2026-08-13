@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 import { loadRazorpayScript } from "@/lib/loadRazorpay";
 
 export default function ChangeTierButton({
@@ -59,6 +60,7 @@ export default function ChangeTierButton({
   async function handleChangeTier() {
     if (!selectedTier) {
       setError("Please select a tier.");
+      toast.error("Please select a tier.");
       return;
     }
 
@@ -67,6 +69,7 @@ export default function ChangeTierButton({
       selectedTier.toString() === currentTierId.toString()
     ) {
       setError("You are already on this tier.");
+      toast.info("You are already on this tier.");
       return;
     }
 
@@ -137,9 +140,10 @@ export default function ChangeTierButton({
               );
             }
 
-            setMessage(
-              verifyData.message || `Successfully changed tier to ${tier.name}!`
-            );
+            const successMsg =
+              verifyData.message || `Successfully changed tier to ${tier.name}!`;
+            setMessage(successMsg);
+            toast.success(successMsg);
 
             // Refresh page to update dashboard
             setTimeout(() => {
@@ -147,9 +151,11 @@ export default function ChangeTierButton({
             }, 1200);
           } catch (verifyErr) {
             console.error("Verification error:", verifyErr);
-            setError(
-              verifyErr.message || "Payment verification failed. Please contact support."
-            );
+            const errText =
+              verifyErr.message ||
+              "Payment verification failed. Please contact support.";
+            setError(errText);
+            toast.error(errText);
           } finally {
             setChanging(false);
           }
@@ -171,17 +177,20 @@ export default function ChangeTierButton({
       const razorpayInstance = new window.Razorpay(options);
       razorpayInstance.on("payment.failed", function (response) {
         console.error("Payment failed:", response.error);
-        setError(
+        const errMsg =
           response.error?.description ||
-            "Payment could not be processed. Please try again."
-        );
+          "Payment could not be processed. Please try again.";
+        setError(errMsg);
+        toast.error(errMsg);
         setChanging(false);
       });
 
       razorpayInstance.open();
     } catch (error) {
       console.error("Change tier error:", error);
-      setError(error?.message || "Failed to change tier.");
+      const errMsg = error?.message || "Failed to change tier.";
+      setError(errMsg);
+      toast.error(errMsg);
       setChanging(false);
     }
   }

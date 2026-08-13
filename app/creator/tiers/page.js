@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import ChaiLoader from "@/components/ChaiLoader";
+import { toast } from "react-toastify";
 import {
   ArrowLeft,
   Coffee,
@@ -117,8 +118,10 @@ export default function CreatorTiersPage() {
       });
 
       setMessage("Tier created successfully.");
+      toast.success("Tier created successfully.");
     } catch (err) {
       setError(err.message);
+      toast.error(err.message || "Failed to create tier.");
     } finally {
       setCreating(false);
     }
@@ -182,9 +185,11 @@ export default function CreatorTiersPage() {
       setMessage(
         "Tier updated successfully."
       );
+      toast.success("Tier updated successfully.");
     } catch (err) {
       console.error(err);
       setError(err.message);
+      toast.error(err.message || "Failed to update tier.");
     } finally {
       setSavingEdit(false);
     }
@@ -241,9 +246,11 @@ export default function CreatorTiersPage() {
       }
 
       setMessage("Tier deleted successfully.");
+      toast.success("Tier deleted successfully.");
     } catch (err) {
       console.error(err);
       setError(err.message);
+      toast.error(err.message || "Failed to delete tier.");
     } finally {
       setDeletingId(null);
     }
@@ -286,14 +293,15 @@ export default function CreatorTiersPage() {
         )
       );
 
-      setMessage(
-        data.tier.isActive
-          ? "Tier activated successfully."
-          : "Tier deactivated successfully."
-      );
+      const statusMsg = data.tier.isActive
+        ? "Tier activated successfully."
+        : "Tier deactivated successfully.";
+      setMessage(statusMsg);
+      toast.success(statusMsg);
     } catch (err) {
       console.error(err);
       setError(err.message);
+      toast.error(err.message || "Failed to update tier status.");
     } finally {
       setUpdatingStatusId(null);
     }

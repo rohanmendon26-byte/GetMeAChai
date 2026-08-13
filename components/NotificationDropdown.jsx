@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { toast } from "react-toastify";
 import {
   Bell,
   CheckCheck,
@@ -68,6 +69,7 @@ export default function NotificationDropdown() {
         setNotifications((prev) =>
           prev.map((n) => ({ ...n, isRead: true }))
         );
+        toast.success("All notifications marked as read.");
       }
     } catch (err) {
       console.error(err);
